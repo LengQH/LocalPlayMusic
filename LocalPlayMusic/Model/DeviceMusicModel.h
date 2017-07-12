@@ -12,7 +12,7 @@
 /**
  *  歌曲名
  */
-@property (nonatomic,copy)NSString *musicName;
+@property (nonatomic,copy)NSString *musicName; 
 /**
  *  歌手名
  */

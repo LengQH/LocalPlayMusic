@@ -8,7 +8,6 @@
 
 #import "DeviceMusicViewController.h"
 
-#import "DeviceMusicModel.h"            //   音乐模型类
 #import "DeviceMusicTableViewCell.h"    //   TabelViewCell类
 #import "MusicPlayViewController.h"     //   音乐播放控制器
 
@@ -107,6 +106,8 @@ static  NSString *cellID=@"deviceMusicCell";
     [self someLayoutSet];   // 布局设置
     
     [self addModelData];   //  加载数据
+    
+    [self lockScreenAction]; //  锁屏的操作
 
     self.isAddBGImageInVC=YES;
     
@@ -122,12 +123,19 @@ static  NSString *cellID=@"deviceMusicCell";
     self.lastSelectIndexPath=[NSIndexPath indexPathForRow:definePlaySongIndex inSection:0];
     DeviceMusicModel *firstModel=self.arrModelData[self.lastSelectIndexPath.row];  // 这次选中的下标
     self.songNameLabel.text=firstModel.musicName;
-    self.currentSelectModel=firstModel;
-    
+    self.currentSelectModel=self.musicModel=firstModel;
+    self.isLockScreenMsg=YES; // 设置锁屏信息
+
     self.title=@"我的乐库";
     self.mainTableView.delegate=self;
     self.mainTableView.dataSource=self;
     [self.mainTableView registerNib:[UINib nibWithNibName:NSStringFromClass([DeviceMusicTableViewCell class]) bundle:nil] forCellReuseIdentifier:cellID];
+}
+#pragma mark 播放不同的歌曲
+-(void)playDifferentSong:(NSIndexPath *)indexPath{
+    [self selectedCellStyle:indexPath];   // 选中对应的cell和重新播放音乐
+    [self resetRotateImageView];
+    self.lastSelectIndexPath=indexPath;
 }
 #pragma mark 布局设置
 -(void)someLayoutSet{
@@ -143,7 +151,7 @@ static  NSString *cellID=@"deviceMusicCell";
 #pragma mark 添加模型数据
 -(void)addModelData{
     
-    DeviceMusicModel *model0=[DeviceMusicModel deviceMusicModel:@"Good Time" singerName:@"Owl City" showImageName:@"Owl City" isSelected:YES];
+    DeviceMusicModel *model0=[DeviceMusicModel deviceMusicModel:@"Good Time" singerName:@"Owl City" showImageName:@"Owl_City" isSelected:YES];
     DeviceMusicModel *model1=[DeviceMusicModel deviceMusicModel:@"诗画小镇" singerName:@"CRITTY" showImageName:@"CRITTY" isSelected:NO];
     DeviceMusicModel *model2=[DeviceMusicModel deviceMusicModel:@"离心咒" singerName:@"可歆" showImageName:@"timg" isSelected:NO];
     [self.arrModelData addObjectsFromArray:@[model0,model1,model2]];
@@ -191,7 +199,9 @@ static  NSString *cellID=@"deviceMusicCell";
     DeviceMusicModel *musicModel=self.arrModelData[indexPath.row];  // 这次选中的下标
     musicModel.isSelected=YES;
     self.songNameLabel.text=musicModel.musicName;
-    self.currentSelectModel=musicModel;
+    self.currentSelectModel=self.musicModel=musicModel;
+    self.isLockScreenMsg=YES;  // 设置锁屏信息
+    
     [self.mainTableView reloadRowsAtIndexPaths:(NSArray *)arrModelWithReload withRowAnimation:UITableViewRowAnimationNone]; // 刷新对应的行
 }
 #pragma mark 旋转音乐图片
@@ -282,11 +292,59 @@ static  NSString *cellID=@"deviceMusicCell";
     self.playButton.selected=isPlaying;
     
 }
+#pragma mark 是否插入了耳机(重写setting方法)
+-(void)setIsInsertHeadset:(BOOL)isInsertHeadset{
+    self.playButton.selected=isInsertHeadset;
+    [self playLink];
+}
 #pragma mark App进入前台
 -(void)backForegroundAction{
     if(self.playButton.selected){
         [self playLink];   // 恢复播放
     }
+}
+#pragma mark 锁屏的操作
+-(void)lockScreenAction{
+    // 锁屏时点击的按钮
+    __weak typeof(self)  lowSelf=self;
+    self.block = ^(UIEvent *event) {
+        NSInteger currentIndex=lowSelf.lastSelectIndexPath.row;
+        if (event.subtype==UIEventSubtypeRemoteControlPlay) {    //播放
+            lowSelf.playButton.selected=YES;
+            [[MySingleton shareMySingleton] playAction:lowSelf.currentSelectModel.playUrl];
+            [lowSelf playLink];
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlPause) {   //暂停
+            lowSelf.playButton.selected=NO;
+            [[MySingleton shareMySingleton] pauseAction];
+            [lowSelf playLink];
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlStop) {   // 停止
+            lowSelf.playButton.selected=NO;
+            [[MySingleton shareMySingleton] stopAction];
+            [lowSelf playLink];
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlNextTrack) {      // 下一首
+            if (currentIndex==(self.arrModelData.count-1)) {
+                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:0 inSection:0];
+                [lowSelf playDifferentSong:pathValue];     // 播放对应的歌曲
+            }
+            else if((currentIndex>=0)&&(currentIndex<(self.arrModelData.count-1))){
+                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:currentIndex+1 inSection:0];
+                [lowSelf playDifferentSong:pathValue];
+            }
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlPreviousTrack) {  // 上一首
+            if(currentIndex==0){
+                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:self.arrModelData.count-1 inSection:0];
+                [lowSelf playDifferentSong:pathValue];
+            }
+            else if((currentIndex>0)&&(currentIndex<self.arrModelData.count)){
+                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:currentIndex-1 inSection:0];
+                [lowSelf playDifferentSong:pathValue];
+            }
+        }
+    };
 }
 #pragma mark 清除定时器
 -(void)cleanTimer{

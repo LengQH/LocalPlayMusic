@@ -77,7 +77,6 @@ typedef void (^TouchBlock)(UIEvent *event);   // 用来锁屏点击音乐按钮�
     [super viewDidLoad];
     
     [self someUISet];           // 一些UI设置
-    [self rotateMainImageView]; // 旋转图片
     [self addAllSongMess];                               // 添加所有的歌曲对应的信息
     [self setBackgroundRunAndAddNotification];          //  设置可以后台运行
 
@@ -286,23 +285,5 @@ typedef void (^TouchBlock)(UIEvent *event);   // 用来锁屏点击音乐按钮�
                              };
     [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo=dicMess;
     
-}
-#pragma mark 旋转主图片
--(void)rotateMainImageView{
-    
-    id changeValue=changeValue=@(2*M_PI);
-    CABasicAnimation *base=[[CABasicAnimation alloc]init];
-    base.keyPath=@"transform.rotation";  // 设置是旋转类型
-    base.fromValue=@(0);
-    base.toValue=changeValue;         // 旋转的角度(一个顺时针,一个逆时针)
-    
-    base.repeatCount=CGFLOAT_MAX;   // 无限循环
-    base.duration=animationTime;   //  动画执行的时间
-    base.valueFunction=[CAValueFunction functionWithName:kCAMediaTimingFunctionLinear]; // 匀速运动
-    base.removedOnCompletion=YES;      // 删除之前的动画路径
-    base.fillMode=kCAFillModeForwards;
-    
-    [self.mainImageView.layer addAnimation:base forKey:nil];  // 添加视图动画
-
 }
 @end

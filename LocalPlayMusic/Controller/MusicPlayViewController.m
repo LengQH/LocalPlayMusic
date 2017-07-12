@@ -163,6 +163,7 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
     
     [self otherOpeartion];
     [self someUISet];
+    [self lockScreenAction]; //  锁屏的操作
 
 }
 #pragma mark 其他操作
@@ -270,12 +271,14 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
     
     if(self.playSongIndex==0){
         self.playSongIndex=self.allSongModel.count-1;
-        self.currentMusicModel=self.allSongModel[self.playSongIndex];
+        self.currentMusicModel=self.musicModel=self.allSongModel[self.playSongIndex];
+        self.isLockScreenMsg=YES;
         [self setShowSongName:self.currentMusicModel];  // 显示歌曲的名字
     }
     else if ((self.playSongIndex>0)&&(self.playSongIndex<(self.allSongModel.count))){
         self.playSongIndex-=1;
-        self.currentMusicModel=self.allSongModel[self.playSongIndex];
+        self.currentMusicModel=self.musicModel=self.allSongModel[self.playSongIndex];
+        self.isLockScreenMsg=YES;
         [self setShowSongName:self.currentMusicModel];  // 显示歌曲的名
     }
     // 重新播放
@@ -326,12 +329,14 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
     
     if (self.playSongIndex==(self.allSongModel.count-1)) {
         self.playSongIndex=0;
-        self.currentMusicModel=self.allSongModel[self.playSongIndex];
+        self.currentMusicModel=self.musicModel=self.allSongModel[self.playSongIndex];
+        self.isLockScreenMsg=YES;
         [self setShowSongName:self.currentMusicModel];  // 显示歌曲的名字
     }
     else if ((self.playSongIndex>=0)&&(self.playSongIndex<(self.allSongModel.count-1))){
         self.playSongIndex+=1;
-        self.currentMusicModel=self.allSongModel[self.playSongIndex];
+        self.currentMusicModel=self.musicModel=self.allSongModel[self.playSongIndex];
+        self.isLockScreenMsg=YES;
         [self setShowSongName:self.currentMusicModel];  // 显示歌曲的名
     }
     // 重新播放
@@ -405,6 +410,12 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
     self.rotateCenterImageView.transform=CGAffineTransformIdentity;
     [self playLink];
 }
+#pragma mark 是否插入了耳机(重写setting方法)
+-(void)setIsInsertHeadset:(BOOL)isInsertHeadset{
+    self.playButton.selected=isInsertHeadset;
+    [self playLink];
+    
+}
 #pragma mark App进入前台
 -(void)backForegroundAction{
     if(self.playButton.selected){
@@ -413,6 +424,34 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
     else{
         isClickedLastOrNextButtonWithFirst=isClickedPlayButtonWithFirst=NO;
     }
+}
+#pragma mark 锁屏的操作
+-(void)lockScreenAction{
+    // 锁屏时点击的按钮
+    __weak typeof(self)  lowSelf=self;
+    self.block = ^(UIEvent *event) {
+        if (event.subtype==UIEventSubtypeRemoteControlPlay) {    //播放
+            lowSelf.playButton.selected=YES;
+            [[MySingleton shareMySingleton] playAction:lowSelf.currentMusicModel.playUrl];
+            [lowSelf playLink];
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlPause) {   //暂停
+            lowSelf.playButton.selected=NO;
+            [[MySingleton shareMySingleton] pauseAction];
+            [lowSelf playLink];
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlStop) {   // 停止
+            lowSelf.playButton.selected=NO;
+            [[MySingleton shareMySingleton] stopAction];
+            [lowSelf playLink];
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlNextTrack) {      // 下一首
+            [lowSelf nextPlayAction:lowSelf.playButton];
+        }
+        if (event.subtype==UIEventSubtypeRemoteControlPreviousTrack) {  // 上一首
+            [lowSelf lastPlayAction:lowSelf.playButton];
+        }
+    };
 }
 #pragma mark 清除定时器
 -(void)cleanTimer{
