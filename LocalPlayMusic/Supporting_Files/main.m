@@ -11,9 +11,6 @@
 
 int main(int argc, char * argv[]) {
     @autoreleasepool {
-        
-        NSLog(@"Main Function: This is a test App");
-        
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
 
     }

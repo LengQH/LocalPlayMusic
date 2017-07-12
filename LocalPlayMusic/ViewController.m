@@ -175,10 +175,10 @@ typedef void (^TouchBlock)(UIEvent *event);   // 用来锁屏点击音乐按钮�
         BOOL playSuccess=[self.player play]; // 播放是否成功
         
         if(playSuccess){
-            NSLog(@"播放成功");
+            NSLengLog(@"播放成功");
         }
         else{
-            NSLog(@"播放失败,请检测URL是否正确或者<AVAudioPlayer>对象是否设置为全局变量");
+            NSLengLog(@"播放失败,请检测URL是否正确或者<AVAudioPlayer>对象是否设置为全局变量");
         }
     }
 }
@@ -225,12 +225,12 @@ typedef void (^TouchBlock)(UIEvent *event);   // 用来锁屏点击音乐按钮�
 #pragma mark -代理方法
 // 播放完成
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
-    NSLog(@"播放完成,执行下一个播放");
+    NSLengLog(@"播放完成,执行下一个播放");
     [self nextOperation];
 }
 // 播放中出现错误
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError * __nullable)error{
-    NSLog(@"播放中出现错误");
+    NSLengLog(@"播放中出现错误");
 }
 -(void)remoteControlReceivedWithEvent:(UIEvent *)event{
     
@@ -245,7 +245,7 @@ typedef void (^TouchBlock)(UIEvent *event);   // 用来锁屏点击音乐按钮�
 
     NSDictionary *dicMess=notifa.userInfo;
     
-    NSLog(@"(插入/拔出设备)通知里面的信息是:%@",dicMess);
+    NSLengLog(@"(插入/拔出设备)通知里面的信息是:%@",dicMess);
     
     AVAudioSessionRouteDescription *sessionDesc=dicMess[AVAudioSessionRouteChangePreviousRouteKey];
     AVAudioSessionPortDescription *portDesc=[sessionDesc.outputs firstObject];
