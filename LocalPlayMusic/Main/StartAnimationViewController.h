@@ -15,6 +15,6 @@ typedef void (^AnimationBock) (void);
 /**
  *  动画完成的回调
  */
-@property (nonatomic,copy)AnimationBock   block;
+@property (nonatomic,copy)AnimationBock   finishAnimationBlock;
 
 @end

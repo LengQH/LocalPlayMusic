@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+
 typedef void (^LockScreenBlock)(UIEvent *event);   // 用来锁屏点击音乐按钮的回调
 
 #import "DeviceMusicModel.h"            //   音乐模型类

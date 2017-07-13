@@ -56,8 +56,8 @@
 }
 #pragma mark 转场动画执行完毕的回调
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
-    if (self.block) {
-        self.block();
+    if (self.finishAnimationBlock) {
+        self.finishAnimationBlock();
     }
 }
 #pragma mark 得到系统的Launch图片

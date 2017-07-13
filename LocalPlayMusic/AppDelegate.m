@@ -28,7 +28,7 @@
     StartAnimationViewController  *animationVC=[[StartAnimationViewController alloc]init];   //  动画视图控制器
     self.window.rootViewController=animationVC;
     
-    animationVC.block=^{   // 动画执行完毕,进入导航控制器
+    animationVC.finishAnimationBlock=^{   // 动画执行完毕,进入导航控制器
         
          AllSuperNavigationController *mainNavigation=[[AllSuperNavigationController alloc]initWithRootViewController:[MySingleton loadViewController:[DeviceMusicViewController class]]];
         [MySingleton getSystemMainWindow].rootViewController=mainNavigation;        

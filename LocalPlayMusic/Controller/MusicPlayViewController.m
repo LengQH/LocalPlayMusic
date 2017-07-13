@@ -26,8 +26,9 @@
 #define labelLeftDistance      10*heightRatioWithAll //   Label的左边距
 
 @interface MusicPlayViewController ()<CustomTrackSliderDelegate>{
-    BOOL isClickedPlayButtonWithFirst;          // 是否点击过一次播放按钮
-    BOOL isClickedLastOrNextButtonWithFirst;   //  是否点击过一次上一首或者下一首按钮
+    
+    BOOL isClickedPlayButtonWithFirst;          //  是否点击过一次播放按钮
+    BOOL isClickedLastOrNextButtonWithFirst;    //  是否点击过一次上一首或者下一首按钮
 }
 /**
  *  定时器
@@ -206,6 +207,8 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
         self.currentPlayMode=(PlayMusicMode)[modelWithPlay integerValue];
     }
     [self.randomPlayButton setImage:[UIImage imageNamed:self.arrAddImageName[self.currentPlayMode]] forState:UIControlStateNormal];
+    
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(systemVolumeChange:) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];   // 监测手机音量键的改变
 }
 #pragma mark 布局设置
 -(void)someLayoutSet{
@@ -296,7 +299,7 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
         if (self.isPlaying) {
             [self playLink]; // 暂停旋转图片和显示暂停播放杠
             [self showGangWhenPausePlaySong:YES];
-            [[MySingleton shareMySingleton]pauseAction];  // 暂停播放
+            [[MySingleton shareMySingleton] pauseAction];  // 暂停播放
         }
         else{
             if(self.lastPageVCIsPlayed){
@@ -317,7 +320,7 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
         else{
             [self playLink]; // 暂停旋转图片和显示暂停播放杠
             [self showGangWhenPausePlaySong:YES];
-            [[MySingleton shareMySingleton]pauseAction];  // 暂停播放
+            [[MySingleton shareMySingleton] pauseAction];  // 暂停播放
         }
     }
 }
@@ -347,9 +350,20 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
 - (void)volumeActionWithView{
     self.volumeSlider.hidden=!self.volumeSlider.hidden;
 }
-#pragma mark 改变的音量值
+#pragma mark 改变的音量值和设置系统的音量
 -(void)currentValueOfSlider:(CGFloat)sliderValue{
-    NSLengLog(@"滑动改变的值:%f",sliderValue);
+
+    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+    UISlider* volumeViewSlider = nil;
+    for (UIView *view in volumeView.subviews){
+        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+            volumeViewSlider = (UISlider*)view;
+            break;
+        }
+    }
+    [volumeViewSlider setValue:sliderValue animated:NO];
+    [volumeViewSlider sendActionsForControlEvents:UIControlEventTouchUpInside];
+    
 }
 #pragma mark 设置显示歌曲的名字
 -(void)setShowSongName:(DeviceMusicModel *)modelData{
@@ -452,6 +466,16 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
             [lowSelf lastPlayAction:lowSelf.playButton];
         }
     };
+}
+#pragma mark 系统音量的改变
+-(void)systemVolumeChange:(NSNotification *)notifa{
+
+    NSDictionary *info=notifa.userInfo;
+    CGFloat volumeValueWithSystem=[info[@"AVSystemController_AudioVolumeNotificationParameter"] floatValue];
+    self.volumeSlider.hidden=NO;
+    self.volumeSlider.value=volumeValueWithSystem;
+    
+    NSLengLog(@"返回的信息:%@ 现在音量的值:%f",info,volumeValueWithSystem);
 }
 #pragma mark 清除定时器
 -(void)cleanTimer{
