@@ -11,7 +11,7 @@
 static MySingleton *mySing=nil;
 
 
-@interface MySingleton ()
+@interface MySingleton ()<AVAudioPlayerDelegate>
 
 @end
 
@@ -47,6 +47,7 @@ static MySingleton *mySing=nil;
     self.player=[[AVAudioPlayer alloc]initWithContentsOfURL:url error:&error];
     self.player.numberOfLoops=0;  //   就播放一次,如果播放两次就设置为 1
     self.player.volume=1.0;       //   设置对应的音量
+    self.player.delegate=self;
 }
 #pragma mark 播放操作
 -(void)playAction:(NSURL *)url{
@@ -86,6 +87,12 @@ static MySingleton *mySing=nil;
 -(void)stopAction{
     [self.player stop];
     self.player=nil;
+}
+#pragma mark 音乐播放完成的代理
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag{
+    if(self.playFinish){
+        self.playFinish();
+    }
 }
 
 

@@ -305,8 +305,17 @@ static  NSString *cellID=@"deviceMusicCell";
 }
 #pragma mark 锁屏的操作
 -(void)lockScreenAction{
-    // 锁屏时点击的按钮
+    
     __weak typeof(self)  lowSelf=self;
+    
+    //  音乐播放完成的回调
+    [MySingleton shareMySingleton].playFinish=^(){
+        NSLengLog(@"音乐列表页面,播放下一首");
+        NSInteger currentIndex=lowSelf.lastSelectIndexPath.row;
+        [lowSelf playNextSong:currentIndex];
+    };
+
+    // 锁屏时点击的按钮
     self.block = ^(UIEvent *event) {
         NSInteger currentIndex=lowSelf.lastSelectIndexPath.row;
         if (event.subtype==UIEventSubtypeRemoteControlPlay) {    //播放
@@ -325,26 +334,34 @@ static  NSString *cellID=@"deviceMusicCell";
             [lowSelf playLink];
         }
         if (event.subtype==UIEventSubtypeRemoteControlNextTrack) {      // 下一首
-            if (currentIndex==(self.arrModelData.count-1)) {
-                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:0 inSection:0];
-                [lowSelf playDifferentSong:pathValue];     // 播放对应的歌曲
-            }
-            else if((currentIndex>=0)&&(currentIndex<(self.arrModelData.count-1))){
-                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:currentIndex+1 inSection:0];
-                [lowSelf playDifferentSong:pathValue];
-            }
+            [lowSelf playNextSong:currentIndex];
         }
         if (event.subtype==UIEventSubtypeRemoteControlPreviousTrack) {  // 上一首
-            if(currentIndex==0){
-                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:self.arrModelData.count-1 inSection:0];
-                [lowSelf playDifferentSong:pathValue];
-            }
-            else if((currentIndex>0)&&(currentIndex<self.arrModelData.count)){
-                NSIndexPath *pathValue=[NSIndexPath indexPathForRow:currentIndex-1 inSection:0];
-                [lowSelf playDifferentSong:pathValue];
-            }
+            [lowSelf playLastSong:currentIndex];
         }
     };
+}
+#pragma mark 播放下一首歌
+-(void)playNextSong:(NSInteger)currentIndex{
+    if (currentIndex==(self.arrModelData.count-1)) {
+        NSIndexPath *pathValue=[NSIndexPath indexPathForRow:0 inSection:0];
+        [self playDifferentSong:pathValue];     // 播放对应的歌曲
+    }
+    else if((currentIndex>=0)&&(currentIndex<(self.arrModelData.count-1))){
+        NSIndexPath *pathValue=[NSIndexPath indexPathForRow:currentIndex+1 inSection:0];
+        [self playDifferentSong:pathValue];
+    }
+}
+#pragma mark 播放上一首歌
+-(void)playLastSong:(NSInteger)currentIndex{
+    if(currentIndex==0){
+        NSIndexPath *pathValue=[NSIndexPath indexPathForRow:self.arrModelData.count-1 inSection:0];
+        [self playDifferentSong:pathValue];
+    }
+    else if((currentIndex>0)&&(currentIndex<self.arrModelData.count)){
+        NSIndexPath *pathValue=[NSIndexPath indexPathForRow:currentIndex-1 inSection:0];
+        [self playDifferentSong:pathValue];
+    }
 }
 #pragma mark 清除定时器
 -(void)cleanTimer{

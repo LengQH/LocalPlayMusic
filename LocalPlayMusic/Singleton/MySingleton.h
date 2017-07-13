@@ -11,6 +11,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 
+typedef void(^MusicPlayed)(void);    // 音乐播放完成
+
 @interface MySingleton : NSObject
 
 /**
@@ -24,6 +26,10 @@
  *  播放器对象
  */
 @property (nonatomic,strong)AVAudioPlayer   *player;
+/**
+ *  播放音乐完成的block回调
+ */
+@property (nonatomic,copy)MusicPlayed    playFinish;
 /**
  *  播放操作
  */

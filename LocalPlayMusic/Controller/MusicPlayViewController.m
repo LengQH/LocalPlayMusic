@@ -441,8 +441,16 @@ NSString *smallCircleWithBigKeyID=@"smallCircleWithBigKeyID";
 }
 #pragma mark 锁屏的操作
 -(void)lockScreenAction{
-    // 锁屏时点击的按钮
+    
     __weak typeof(self)  lowSelf=self;
+    
+    //  音乐播放完成的回调
+    [MySingleton shareMySingleton].playFinish=^(){
+        NSLengLog(@"音乐详情页面,播放下一首");
+        [lowSelf nextPlayAction:lowSelf.playButton];
+    };
+    // 锁屏时点击的按钮
+    
     self.block = ^(UIEvent *event) {
         if (event.subtype==UIEventSubtypeRemoteControlPlay) {    //播放
             lowSelf.playButton.selected=YES;

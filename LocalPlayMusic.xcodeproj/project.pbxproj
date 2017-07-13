@@ -27,7 +27,6 @@
 		85B22D761EFA6B1F002B1CF0 /* StartAnimationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B22D751EFA6B1F002B1CF0 /* StartAnimationViewController.m */; };
 		85B22D791EFA7325002B1CF0 /* UIView+FontSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 85B22D781EFA7325002B1CF0 /* UIView+FontSize.m */; };
 		85BA2C161EA076A400B12659 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 85BA2C071EA076A400B12659 /* AppDelegate.m */; };
-		85BA2C201EA076A400B12659 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 85BA2C151EA076A400B12659 /* ViewController.m */; };
 		85EE91061EF37CD80010FD91 /* CustomProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 85EE91051EF37CD80010FD91 /* CustomProxy.m */; };
 		85EE91091EF37D440010FD91 /* CustomTrackSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 85EE91081EF37D440010FD91 /* CustomTrackSlider.m */; };
 		85EE910E1EF37EE00010FD91 /* ChangeFontWithButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 85EE910B1EF37EE00010FD91 /* ChangeFontWithButton.m */; };
@@ -71,8 +70,6 @@
 		85B22D781EFA7325002B1CF0 /* UIView+FontSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FontSize.m"; sourceTree = "<group>"; };
 		85BA2C061EA076A400B12659 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ../AppDelegate.h; sourceTree = "<group>"; };
 		85BA2C071EA076A400B12659 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ../AppDelegate.m; sourceTree = "<group>"; };
-		85BA2C141EA076A400B12659 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		85BA2C151EA076A400B12659 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		85EE91041EF37CD80010FD91 /* CustomProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomProxy.h; sourceTree = "<group>"; };
 		85EE91051EF37CD80010FD91 /* CustomProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomProxy.m; sourceTree = "<group>"; };
 		85EE91071EF37D440010FD91 /* CustomTrackSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTrackSlider.h; sourceTree = "<group>"; };
@@ -218,8 +215,6 @@
 				8554818A1EF37693000A3EC4 /* Model */,
 				8554818E1EF376E1000A3EC4 /* View */,
 				8554817C1EF37560000A3EC4 /* Controller */,
-				85BA2C141EA076A400B12659 /* ViewController.h */,
-				85BA2C151EA076A400B12659 /* ViewController.m */,
 				8529D5961EA0784E00A40233 /* Supporting_Files */,
 			);
 			path = LocalPlayMusic;
@@ -336,7 +331,6 @@
 				85EE91161EF387430010FD91 /* NSObject+ChangeUnicode.m in Sources */,
 				855481831EF37619000A3EC4 /* DeviceMusicViewController.m in Sources */,
 				85BA2C161EA076A400B12659 /* AppDelegate.m in Sources */,
-				85BA2C201EA076A400B12659 /* ViewController.m in Sources */,
 				85EE910E1EF37EE00010FD91 /* ChangeFontWithButton.m in Sources */,
 				85EE91131EF380BE0010FD91 /* MySingleton.m in Sources */,
 				85EE910F1EF37EE00010FD91 /* ChangeFontWithLabel.m in Sources */,
