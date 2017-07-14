@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DeviceMusicViewController">
             <connections>
                 <outlet property="bomAllViewH" destination="Ylp-X4-tcu" id="e9G-iM-Ty6"/>
+                <outlet property="bomSuperView" destination="ofW-zV-jEV" id="BIT-TO-NuS"/>
                 <outlet property="centerMusicImageView" destination="Oi7-Cr-jRK" id="hox-2V-Lph"/>
                 <outlet property="clickView" destination="siF-K2-sUD" id="VKF-oG-ABY"/>
                 <outlet property="mainTableView" destination="5sb-95-Ra0" id="Oec-3Q-e2k"/>

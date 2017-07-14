@@ -36,6 +36,12 @@
  */
 @property (weak, nonatomic) IBOutlet UIImageView *centerMusicImageView;
 /**
+ *  底部父视图
+ */
+@property (weak, nonatomic) IBOutlet UIView *bomSuperView;
+
+
+/**
  *  歌曲名字
  */
 @property (weak, nonatomic) IBOutlet UILabel *songNameLabel;
@@ -113,20 +119,29 @@ static  NSString *cellID=@"deviceMusicCell";
 - (void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection{
     if(mediaItemCollection.items>0){
         for (MPMediaItem *medicItem in mediaItemCollection.items) {
-            NSString *playSongUrl=(NSString *)[medicItem valueForKey:MPMediaItemPropertyAssetURL];
-            NSURL *playUrl=[NSURL URLWithString:playSongUrl];
-
+            
+            NSURL *playUrl=(NSURL *)[medicItem valueForKey:MPMediaItemPropertyAssetURL];
+            
             if([self.arrAddSongUrl indexOfObject:playUrl]==NSNotFound){
+                
+                self.bomSuperView.hidden=NO;
+                
                 DeviceMusicModel *addMusicModel=[[DeviceMusicModel alloc]init];
                 addMusicModel.musicName=(NSString *)[medicItem valueForKey:MPMediaItemPropertyTitle];
                 addMusicModel.singerName=(NSString *)[medicItem valueForKey:MPMediaItemPropertyArtist];
                 MPMediaItemArtwork *itemArtwork=[medicItem valueForKey:MPMediaItemPropertyArtwork];
                 addMusicModel.showImage=[itemArtwork imageWithSize:CGSizeMake(100, 100)];
-                addMusicModel.isSelected=NO;
+                addMusicModel.isSelected=(self.arrModelData.count==0)?YES:NO;
                 addMusicModel.playUrl=playUrl;
                 
+                if (self.arrModelData.count==0) {               // 当模型数据数组没有数据时,添加第一条设置默认的选中歌曲
+                    self.currentSelectModel=addMusicModel;
+                    self.lastSelectIndexPath=[NSIndexPath indexPathForRow:0 inSection:0];
+                    self.songNameLabel.text=addMusicModel.musicName;
+                }
                 [self.arrAddSongUrl addObject:playUrl];
                 [self.arrModelData addObject:addMusicModel];
+                
             }
         }
     }
@@ -146,6 +161,8 @@ static  NSString *cellID=@"deviceMusicCell";
 }
 #pragma mark 一些UI设置
 -(void)someUISet{
+    
+//    self.mainTableView.editing=YES;
     
     [self someLayoutSet];   // 布局设置
     
@@ -229,6 +246,42 @@ static  NSString *cellID=@"deviceMusicCell";
     [self selectedCellStyle:indexPath];                      //  选中Cell改变样式
     [self resetRotateImageView];                             //   重新旋转图片
     self.lastSelectIndexPath=indexPath;
+}
+-(BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+- (UITableViewCellEditingStyle) tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return UITableViewCellEditingStyleDelete;
+}
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return @"删除";
+}
+#pragma mark -数据源方法删除
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    // 停止音乐播放
+    [[MySingleton shareMySingleton] stopAction];
+    self.playButton.selected=NO;
+    
+    // 删除对应的数据和cell
+    [self.arrAddSongUrl removeObjectAtIndex:indexPath.row];
+    [self.arrModelData removeObjectAtIndex:indexPath.row];
+    [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    
+    // 重新设置对应的选中的Cell
+    if (self.arrModelData.count>0) {
+        NSIndexPath *selectPath=indexPath;
+        if (indexPath.row!=0) {
+            selectPath=[NSIndexPath indexPathForRow:indexPath.row-1 inSection:0];
+        }
+        [self selectedCellStyle:selectPath];
+    }
+    // 删除完毕设置对应视图的隐藏
+    if (self.arrModelData.count==0) {
+        self.bomSuperView.hidden=YES;
+        self.currentSelectModel=nil;
+        self.songNameLabel.text=nil;
+    }
 }
 #pragma mark 选中Cell改变对应的Cell
 -(void)selectedCellStyle:(NSIndexPath *)indexPath{
