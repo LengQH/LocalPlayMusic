@@ -87,21 +87,25 @@
 -(void)setIsLockScreenMsg:(BOOL)isLockScreenMsg{
     if (!isLockScreenMsg) return;
     
-    BOOL isChange=[[UIDevice currentDevice].systemName floatValue]>=10.0;
+    NSMutableDictionary *dicMess=[NSMutableDictionary dictionary];
+    dicMess[MPMediaItemPropertyTitle]=self.musicModel.musicName;         //  歌曲的名字
+    dicMess[MPMediaItemPropertyArtist]=self.musicModel.singerName;       //  歌手的名字
     
-    __block UIImage *imageObj=[UIImage imageNamed:self.musicModel.showImageName];
-    MPMediaItemArtwork *itemArtwork=[[MPMediaItemArtwork alloc]initWithImage:imageObj];  // 这个方法只能IOS到 IOS-10.0
-    if (isChange) {
-        itemArtwork=[[MPMediaItemArtwork alloc]initWithBoundsSize:imageObj.size requestHandler:^UIImage * _Nonnull(CGSize size) {
-            return imageObj;
-        }];
+    // 下面是设置对应的图片
+    if (self.musicModel.showImage) {
+        BOOL isChange=[[UIDevice currentDevice].systemName floatValue]>=10.0;
+        __block UIImage *imageObj=self.musicModel.showImage;
+        
+        MPMediaItemArtwork *itemArtwork=[[MPMediaItemArtwork alloc]initWithImage:imageObj];  // 这个方法只能IOS到 IOS10.0
+        if (isChange) {
+            itemArtwork=[[MPMediaItemArtwork alloc]initWithBoundsSize:imageObj.size requestHandler:^UIImage * _Nonnull(CGSize size) {
+                return imageObj;
+            }];
+        }
+        dicMess[MPMediaItemPropertyArtwork]=itemArtwork;                 //  对应的图片
     }
-    NSDictionary  *dicMess=@{
-                             MPMediaItemPropertyTitle:self.musicModel.musicName,       //  歌曲的名字
-                             MPMediaItemPropertyArtist:self.musicModel.singerName,     //  歌手的名字
-                             MPMediaItemPropertyArtwork:itemArtwork  //  对应的图片
-                             };
-    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo=dicMess;
+    
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo=(NSDictionary *)dicMess;
     
 }
 #pragma mark 销毁控制器移除通知

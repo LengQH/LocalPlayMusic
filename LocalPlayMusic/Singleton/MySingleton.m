@@ -10,12 +10,12 @@
 
 static MySingleton *mySing=nil;
 
-
 @interface MySingleton ()<AVAudioPlayerDelegate>
 
 @end
 
 @implementation MySingleton
+
 
 #pragma mark -初始化一个单例
 +(instancetype)shareMySingleton{
@@ -43,6 +43,7 @@ static MySingleton *mySing=nil;
 }
 #pragma mark 初始化播放
 -(void)startPlay:(NSURL *)url{
+    if(!url) return;
     NSError *error=nil;
     self.player=[[AVAudioPlayer alloc]initWithContentsOfURL:url error:&error];
     self.player.numberOfLoops=0;  //   就播放一次,如果播放两次就设置为 1
@@ -51,6 +52,7 @@ static MySingleton *mySing=nil;
 }
 #pragma mark 播放操作
 -(void)playAction:(NSURL *)url{
+    if(!url) return;
     if (!self.player.playing) {   //  没有播放
         if (!self.player) {       //  没有创建播放器对象
             [self startPlay:url];
@@ -67,6 +69,7 @@ static MySingleton *mySing=nil;
 }
 #pragma mark 上一首操作
 -(void)lastAction:(NSURL *)url{
+    if(!url) return;
     [self.player stop];
     self.player=nil;
     [self startPlay:url];
@@ -74,6 +77,7 @@ static MySingleton *mySing=nil;
 }
 #pragma mark 下一首操作
 -(void)nextAction:(NSURL *)url{
+    if(!url) return;
     [self lastAction:url];
 }
 #pragma mark 暂停操作
@@ -94,10 +98,6 @@ static MySingleton *mySing=nil;
         self.playFinish();
     }
 }
-
-
-
-
 
 
 #pragma mark 通过类名获取控制器

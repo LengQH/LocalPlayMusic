@@ -19,7 +19,7 @@
 
 #define definePlaySongIndex 0                 //  默认播放歌曲下标
 
-@interface DeviceMusicViewController ()<UITableViewDelegate,UITableViewDataSource,MusicPlayViewControllerDelegate,AVAudioPlayerDelegate>{
+@interface DeviceMusicViewController ()<UITableViewDelegate,UITableViewDataSource,MusicPlayViewControllerDelegate,MPMediaPickerControllerDelegate>{
     BOOL joinClickPlayButton;    // 进来直接点击了播放按钮
     BOOL isPlayed;   // 是否播放过
 }
@@ -52,6 +52,10 @@
  */
 @property (nonatomic,strong)NSMutableArray<DeviceMusicModel *>  *arrModelData;
 /**
+ *  音乐播放地址的URL
+ */
+@property (nonatomic,strong)NSMutableArray<NSURL *>  *arrAddSongUrl;
+/**
  *  当前选中的模型
  */
 @property (nonatomic,strong)DeviceMusicModel *currentSelectModel;
@@ -59,11 +63,10 @@
  *  上一次选中的下标
  */
 @property (nonatomic,strong)NSIndexPath *lastSelectIndexPath;
-
 /**
- *  本地音乐的地址数组
+ *  视频播放选择控制器
  */
-@property (nonatomic,strong)NSMutableArray<NSURL *>  *arrAddSongUrl;
+@property (nonatomic,strong)MPMediaPickerController *mediaPicker;
 
 
 
@@ -97,10 +100,51 @@ static  NSString *cellID=@"deviceMusicCell";
     }
     return _arrAddSongUrl;
 }
+-(MPMediaPickerController *)mediaPicker{
+    if(_mediaPicker==nil){
+        _mediaPicker=[[MPMediaPickerController alloc]initWithMediaTypes:MPMediaTypeMusic];
+        _mediaPicker.allowsPickingMultipleItems=YES;
+        _mediaPicker.prompt=@"请选择你要播放的音乐";
+        _mediaPicker.delegate=self;
+    }
+    return _mediaPicker;
+}
+#pragma mark -MediaPicker的代理
+- (void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection{
+    if(mediaItemCollection.items>0){
+        for (MPMediaItem *medicItem in mediaItemCollection.items) {
+            NSString *playSongUrl=(NSString *)[medicItem valueForKey:MPMediaItemPropertyAssetURL];
+            NSURL *playUrl=[NSURL URLWithString:playSongUrl];
+
+            if([self.arrAddSongUrl indexOfObject:playUrl]==NSNotFound){
+                DeviceMusicModel *addMusicModel=[[DeviceMusicModel alloc]init];
+                addMusicModel.musicName=(NSString *)[medicItem valueForKey:MPMediaItemPropertyTitle];
+                addMusicModel.singerName=(NSString *)[medicItem valueForKey:MPMediaItemPropertyArtist];
+                MPMediaItemArtwork *itemArtwork=[medicItem valueForKey:MPMediaItemPropertyArtwork];
+                addMusicModel.showImage=[itemArtwork imageWithSize:CGSizeMake(100, 100)];
+                addMusicModel.isSelected=NO;
+                addMusicModel.playUrl=playUrl;
+                
+                [self.arrAddSongUrl addObject:playUrl];
+                [self.arrModelData addObject:addMusicModel];
+            }
+        }
+    }
+    [self.mainTableView reloadData];   // 刷新表
+    
+    [mediaPicker dismissViewControllerAnimated:YES completion:nil];
+    
+}
+- (void)mediaPickerDidCancel:(MPMediaPickerController *)mediaPicker{
+    NSLengLog(@"取消选择");
+    [mediaPicker dismissViewControllerAnimated:YES completion:nil];
+}
+#pragma mark 视图加载完毕
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self someUISet];
 }
+#pragma mark 一些UI设置
 -(void)someUISet{
     
     [self someLayoutSet];   // 布局设置
@@ -150,10 +194,10 @@ static  NSString *cellID=@"deviceMusicCell";
 }
 #pragma mark 添加模型数据
 -(void)addModelData{
-    
-    DeviceMusicModel *model0=[DeviceMusicModel deviceMusicModel:@"Good Time" singerName:@"Owl City" showImageName:@"Owl_City" isSelected:YES];
-    DeviceMusicModel *model1=[DeviceMusicModel deviceMusicModel:@"诗画小镇" singerName:@"CRITTY" showImageName:@"CRITTY" isSelected:NO];
-    DeviceMusicModel *model2=[DeviceMusicModel deviceMusicModel:@"离心咒" singerName:@"可歆" showImageName:@"timg" isSelected:NO];
+
+    DeviceMusicModel *model0=[DeviceMusicModel deviceMusicModel:@"Good Time" singerName:@"Owl City" showImage:[UIImage imageNamed:@"Owl_City"] isSelected:YES];
+    DeviceMusicModel *model1=[DeviceMusicModel deviceMusicModel:@"诗画小镇" singerName:@"CRITTY" showImage:[UIImage imageNamed:@"CRITTY"] isSelected:NO];
+    DeviceMusicModel *model2=[DeviceMusicModel deviceMusicModel:@"离心咒" singerName:@"可歆" showImage:[UIImage imageNamed:@"timg"] isSelected:NO];
     [self.arrModelData addObjectsFromArray:@[model0,model1,model2]];
     
     for (NSInteger i=0; i<self.arrModelData.count; i++) {   // 赋值URL
@@ -262,6 +306,7 @@ static  NSString *cellID=@"deviceMusicCell";
 #pragma mark  导入本地音乐操作
 -(void)importMusic:(UIBarButtonItem *)item{
     NSLengLog(@"导入本地音乐操作");
+    [self presentViewController:self.mediaPicker animated:YES completion:nil];
 }
 #pragma mark 播放音乐详情的代理
 -(void)musicPlayView:(MusicPlayViewController *)musicPlayVC isPlaying:(BOOL)isPlaying playSongIndex:(NSInteger)index playMode:(PlayMusicMode)mode{

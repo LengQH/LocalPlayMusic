@@ -20,7 +20,7 @@
 /**
  *  显示的图片名
  */
-@property (nonatomic,copy)NSString *showImageName;
+@property (nonatomic,strong)UIImage *showImage;
 /**
  *  是否选中cell
  */
@@ -30,8 +30,8 @@
  */
 @property (nonatomic,assign)NSURL *playUrl;
 
--(instancetype)initWithDeviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImageName:(NSString *)showImageName isSelected:(BOOL)isSelected;
+-(instancetype)initWithDeviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImage:(UIImage *)showImage isSelected:(BOOL)isSelected;
 
-+(instancetype)deviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImageName:(NSString *)showImageName isSelected:(BOOL)isSelected;
++(instancetype)deviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImage:(UIImage *)showImage isSelected:(BOOL)isSelected;
 
 @end

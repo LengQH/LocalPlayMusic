@@ -10,17 +10,17 @@
 
 @implementation DeviceMusicModel
 
--(instancetype)initWithDeviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImageName:(NSString *)showImageName isSelected:(BOOL)isSelected{
+-(instancetype)initWithDeviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImage:(UIImage *)showImage isSelected:(BOOL)isSelected{
     if (self=[super init]) {
         self.musicName=musicName;
         self.singerName=singerName;
-        self.showImageName=showImageName;
+        self.showImage=showImage;
         self.isSelected=isSelected;
     }
     return self;
 }
 
-+(instancetype)deviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImageName:(NSString *)showImageName isSelected:(BOOL)isSelected{
-    return [[self alloc]initWithDeviceMusicModel:musicName singerName:singerName showImageName:showImageName isSelected:isSelected];
++(instancetype)deviceMusicModel:(NSString *)musicName singerName:(NSString *)singerName showImage:(UIImage *)showImage isSelected:(BOOL)isSelected{
+    return [[self alloc]initWithDeviceMusicModel:musicName singerName:singerName showImage:showImage isSelected:isSelected];
 }
 @end

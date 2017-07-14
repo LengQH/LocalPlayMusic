@@ -21,7 +21,6 @@ typedef void(^MusicPlayed)(void);    // 音乐播放完成
  *  @return 单例本类对象
  */
 +(instancetype)shareMySingleton;
-
 /**
  *  播放器对象
  */
@@ -50,9 +49,6 @@ typedef void(^MusicPlayed)(void);    // 音乐播放完成
  *  停止操作
  */
 -(void)stopAction;
-
-
-
 
 
 /**
